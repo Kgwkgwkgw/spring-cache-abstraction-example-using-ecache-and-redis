@@ -1,0 +1,83 @@
+<config
+  xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'
+  xmlns='http://www.ehcache.org/v3'
+  xsi:schemaLocation="
+            http://www.ehcache.org/v3
+            http://www.ehcache.org/schema/ehcache-core-3.7.xsd">
+  <!-- Persistent cache directory -->
+  <!--  디스크 혹은 OffHeap 혹은d 클러스터 모드를 사용하려면, Serializable을 구현하거나 Serializer를 구현해야한다.-->
+  <!--  <persistence directory="spring-boot-ehcache/cache" />-->
+  <!-- Default cache template -->
+  <cache-template name="logger">
+    <!--expire time-->
+    <!--  ttl 설정이고, tti(time to idle)도 가능하다.-->
+    <!--  tti는 요청이 없을 때, 캐시에서 지운다.(요청이 계속 있으면 지우지 않음) -->
+    <expiry>
+      <ttl unit="seconds">30</ttl>
+    </expiry>
+    <listeners>
+      <listener>
+        <!-- 다음 이벤트에 대한 리스너를 설정할 수 있다. (키 생성, 키 만료, 키 제거)-->
+        <class>com.tommy.springcacheabstractionexampleusingecacheandredis.config.EhcacheLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+        <events-to-fire-on>EVICTED</events-to-fire-on>
+      </listener>
+    </listeners>
+  </cache-template>
+
+  <cache-template name="default">
+    <!--expire time-->
+    <!--  ttl 설정이고, tti(time to idle)도 가능하다.-->
+    <!--  tti는 요청이 없을 때, 캐시에서 지운다.(요청이 계속 있으면 지우지 않음) -->
+    <expiry>
+      <ttl unit="seconds">3600</ttl>
+    </expiry>
+    <listeners>
+      <listener>
+        <class>com.tommy.springcacheabstractionexampleusingecacheandredis.config.EhcacheLogger</class>
+        <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+        <event-ordering-mode>UNORDERED</event-ordering-mode>
+        <events-to-fire-on>CREATED</events-to-fire-on>
+        <events-to-fire-on>EXPIRED</events-to-fire-on>
+        <events-to-fire-on>EVICTED</events-to-fire-on>
+      </listener>
+    </listeners>
+    <resources>
+      <!-- 최대 1000개의 엔트리를 힙에 가지겠다는 설정-->
+      <heap>1000</heap>
+      <!-- 10MB 용량의 off-heap 저장소를 설정-->
+<!--      <offheap unit="MB">10</offheap>-->
+      <!-- disk 캐시로 20MB를 설정, 힙 캐쉬보다 항상 더 큰 용량을 가져야 함-->
+    </resources>
+  </cache-template>
+
+  <!--템플릿을 명시하고, 캐시의 키 type과 value의 type을 명시한다. -->
+  <cache uses-template="default" alias="accounts">
+    <value-type>java.util.List</value-type>
+  </cache>
+  <cache uses-template="default" alias="account">
+    <key-type>java.lang.Long</key-type>
+    <value-type>com.tommy.springcacheabstractionexampleusingecacheandredis.model.Account</value-type>
+    <resources>
+      <heap>100</heap>
+<!--      <offheap unit="MB">10</offheap>-->
+    </resources>
+  </cache>
+  <cache uses-template="default" alias="account2">
+    <key-type>java.lang.Long</key-type>
+    <value-type>com.tommy.springcacheabstractionexampleusingecacheandredis.model.Account</value-type>
+  </cache>
+  <cache uses-template="default" alias="account3">
+    <key-type>java.lang.Long</key-type>
+    <value-type>com.tommy.springcacheabstractionexampleusingecacheandredis.model.Account</value-type>
+  </cache>
+  <cache uses-template="default" alias="account4">
+    <!--key가 여러 개의 파라미터로 구성된다면, java.util.ArrayList로 선언해야함-->
+    <key-type>java.util.ArrayList</key-type>
+    <value-type>java.util.List</value-type>
+  </cache>
+</config>
+
